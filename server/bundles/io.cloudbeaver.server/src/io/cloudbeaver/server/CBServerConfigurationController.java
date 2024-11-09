@@ -21,8 +21,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
 import io.cloudbeaver.model.app.BaseServerConfigurationController;
 import io.cloudbeaver.model.app.BaseWebApplication;
-import io.cloudbeaver.service.security.PasswordPolicyConfiguration;
-import io.cloudbeaver.service.security.SMControllerConfiguration;
+import io.cloudbeaver.model.config.CBAppConfig;
+import io.cloudbeaver.model.config.CBServerConfig;
+import io.cloudbeaver.model.config.PasswordPolicyConfiguration;
+import io.cloudbeaver.model.config.SMControllerConfiguration;
 import io.cloudbeaver.utils.WebAppUtils;
 import org.jkiss.code.NotNull;
 import org.jkiss.code.Nullable;
@@ -158,7 +160,7 @@ public abstract class CBServerConfigurationController<T extends CBServerConfig>
                     hostName = InetAddress.getLocalHost().getHostName();
                 } catch (UnknownHostException e) {
                     log.debug("Error resolving localhost address: " + e.getMessage());
-                    hostName = CBApplication.HOST_LOCALHOST;
+                    hostName = CBConstants.HOST_LOCALHOST;
                 }
             }
             config.setServerURL("http://" + hostName + ":" + config.getServerPort());
@@ -330,7 +332,7 @@ public abstract class CBServerConfigurationController<T extends CBServerConfig>
             .registerTypeAdapter(PasswordPolicyConfiguration.class, smPasswordPoliceConfigCreator);
     }
 
-    protected void saveRuntimeConfig(SMCredentialsProvider credentialsProvider) throws DBException {
+    public synchronized void saveRuntimeConfig(SMCredentialsProvider credentialsProvider) throws DBException {
         saveRuntimeConfig(
             serverConfiguration,
             appConfiguration,
@@ -338,7 +340,7 @@ public abstract class CBServerConfigurationController<T extends CBServerConfig>
         );
     }
 
-    protected void saveRuntimeConfig(
+    protected synchronized void saveRuntimeConfig(
         @NotNull CBServerConfig serverConfig,
         @NotNull CBAppConfig appConfig,
         SMCredentialsProvider credentialsProvider
@@ -350,7 +352,7 @@ public abstract class CBServerConfigurationController<T extends CBServerConfig>
         writeRuntimeConfig(getRuntimeAppConfigPath(), configurationProperties);
     }
 
-    private void writeRuntimeConfig(Path runtimeConfigPath, Map<String, Object> configurationProperties)
+    private synchronized void writeRuntimeConfig(Path runtimeConfigPath, Map<String, Object> configurationProperties)
         throws DBException {
         if (Files.exists(runtimeConfigPath)) {
             ContentUtils.makeFileBackup(runtimeConfigPath);
@@ -370,7 +372,8 @@ public abstract class CBServerConfigurationController<T extends CBServerConfig>
     }
 
 
-    public void updateServerUrl(@NotNull SMCredentialsProvider credentialsProvider, @Nullable String newPublicUrl) throws DBException {
+    public synchronized void updateServerUrl(@NotNull SMCredentialsProvider credentialsProvider,
+        @Nullable String newPublicUrl) throws DBException {
         getServerConfiguration().setServerURL(newPublicUrl);
     }
 
@@ -623,5 +626,11 @@ public abstract class CBServerConfigurationController<T extends CBServerConfig>
             uri = '/' + uri;
         }
         return uri;
+    }
+
+    @NotNull
+    @Override
+    public Map<String, Object> getOriginalConfigurationProperties() {
+        return originalConfigurationProperties;
     }
 }

@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.cloudbeaver.auth.provider.local.LocalAuthProviderConstants;
 import io.cloudbeaver.model.app.WebApplication;
+import io.cloudbeaver.model.config.WebDatabaseConfig;
 import io.cloudbeaver.registry.WebAuthProviderDescriptor;
 import io.cloudbeaver.registry.WebAuthProviderRegistry;
 import io.cloudbeaver.utils.WebAppUtils;
@@ -475,7 +476,7 @@ public class CBDatabase {
     // Persistence
 
 
-    private void validateInstancePersistentState(Connection connection) throws IOException, SQLException, DBException {
+    protected void validateInstancePersistentState(Connection connection) throws IOException, SQLException, DBException {
         try (JDBCTransaction txn = new JDBCTransaction(connection)) {
             checkInstanceRecord(connection);
             var defaultTeamId = application.getAppConfiguration().getDefaultUserTeam();
@@ -587,10 +588,24 @@ public class CBDatabase {
     }
 
     public static boolean isDefaultH2Configuration(WebDatabaseConfig databaseConfiguration) {
-        var v1DefaultUrl = "jdbc:h2:/opt/cloudbeaver/workspace/.data/" + V1_DB_NAME;
-        var v2DefaultUrl = "jdbc:h2:/opt/cloudbeaver/workspace/.data/" + V2_DB_NAME;
+        var workspace = WebAppUtils.getWebApplication().getWorkspaceDirectory();
+        var v1Path = workspace.resolve(".data").resolve(V1_DB_NAME);
+        var v2Path = workspace.resolve(".data").resolve(V2_DB_NAME);
+        var v1DefaultUrl = "jdbc:h2:" + v1Path;
+        var v2DefaultUrl = "jdbc:h2:" + v2Path;
         return v1DefaultUrl.equals(databaseConfiguration.getUrl())
             || v2DefaultUrl.equals(databaseConfiguration.getUrl());
     }
 
+    protected WebDatabaseConfig getDatabaseConfiguration() {
+        return databaseConfiguration;
+    }
+
+    protected WebApplication getApplication() {
+        return application;
+    }
+
+    protected SMAdminController getAdminSecurityController() {
+        return adminSecurityController;
+    }
 }
