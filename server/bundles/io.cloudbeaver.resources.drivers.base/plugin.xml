@@ -18,7 +18,7 @@
         <resource name="drivers/mssql/new"/>
         <resource name="drivers/trino"/>
         <resource name="drivers/kyuubi"/>
-        <resource name="drivers/hive"/>
+        <!-- <resource name="drivers/hive"/> -->
         <resource name="drivers/hana"/>
         <resource name="drivers/starrocks"/>
     </extension>
@@ -41,7 +41,7 @@
         <bundle id="drivers.mssql.new" label="SQL Server drivers"/>
         <bundle id="drivers.trino" label="Trino drivers"/>
         <bundle id="drivers.kyuubi" label="Apache Kyuubi drivers"/>
-        <bundle id="drivers.hive" label="Apache Hive drivers"/>
+        <!-- <bundle id="drivers.hive" label="Apache Hive drivers"/> -->
         <bundle id="drivers.hana" label="SAP HANA drivers"/>
         <bundle id="drivers.starrocks" label="StarRocks drivers"/>
     </extension>
@@ -65,7 +65,7 @@
         <driver id="generic:trino_jdbc"/>
         <driver id="generic:duckdb_jdbc"/>
         <driver id="generic:kyuubi_hive"/>
-        <driver id="hive:apache_hive2"/>
+        <!-- <driver id="hive:apache_hive2"/> -->
         <driver id="hana:sap_hana"/>
         <driver id="mysql:starRocks"/>
     </extension>
