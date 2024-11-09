@@ -31,7 +31,7 @@
         <module>sqlite</module>
         <module>sqlserver</module>
         <module>trino</module>
-        <module>hive</module>
+        <!-- <module>hive</module> -->
         <module>hana</module>
         <module>starrocks</module>
     </modules>
