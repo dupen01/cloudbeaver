@@ -34,7 +34,7 @@ import io.cloudbeaver.server.CBPlatform;
 import io.cloudbeaver.service.DBWServiceServerConfigurator;
 import io.cloudbeaver.service.admin.*;
 import io.cloudbeaver.service.security.SMUtils;
-import io.cloudbeaver.utils.WebAppUtils;
+import io.cloudbeaver.utils.ServletAppUtils;
 import org.jkiss.code.NotNull;
 import org.jkiss.code.Nullable;
 import org.jkiss.dbeaver.DBException;
@@ -161,12 +161,13 @@ public class WebServiceAdmin implements DBWServiceAdmin {
         if (userName.isEmpty()) {
             throw new DBWebException("Empty user name");
         }
-        webSession.addInfoMessage("Create new user - " + userName);
+        String userId = userName.toLowerCase();
+        webSession.addInfoMessage("Create new user - " + userId);
 
         try {
             var securityController = webSession.getAdminSecurityController();
-            securityController.createUser(userName, Map.of(), enabled, authRole);
-            var smUser = securityController.getUserById(userName);
+            securityController.createUser(userId, Map.of(), enabled, authRole);
+            var smUser = securityController.getUserById(userId);
             return new AdminUserInfo(webSession, new WebUser(smUser));
         } catch (Exception e) {
             throw new DBWebException("Error creating new user", e);
@@ -268,7 +269,7 @@ public class WebServiceAdmin implements DBWServiceAdmin {
         if (grantor == null) {
             throw new DBWebException("Cannot grant team in anonymous mode");
         }
-        if (!WebAppUtils.getWebApplication().isDistributed()
+        if (!ServletAppUtils.getServletApplication().isDistributed()
             && CommonUtils.equalObjects(user, webSession.getUser().getUserId())
         ) {
             throw new DBWebException("You cannot edit your own permissions");
@@ -288,7 +289,7 @@ public class WebServiceAdmin implements DBWServiceAdmin {
         if (grantor == null) {
             throw new DBWebException("Cannot revoke team in anonymous mode");
         }
-        if (!WebAppUtils.getWebApplication().isDistributed() &&
+        if (!ServletAppUtils.getServletApplication().isDistributed() &&
             CommonUtils.equalObjects(user, webSession.getUser().getUserId())
         ) {
             throw new DBWebException("You cannot edit your own permissions");

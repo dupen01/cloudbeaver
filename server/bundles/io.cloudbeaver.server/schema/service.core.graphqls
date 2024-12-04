@@ -118,6 +118,7 @@ type ProductInfo {
     licenseInfo: String
 
     latestVersionInfo: String
+    productPurchaseURL: String
 }
 
 type ServerConfig {
@@ -125,17 +126,8 @@ type ServerConfig {
     version: String!
     workspaceId: ID!
 
-    serverURL: String!
-    rootURI: String!
-    hostName: String! @deprecated # use container id instead
-    containerId: String!
-    defaultAuthRole: String
-    defaultUserTeam: String # [23.2.2]
-
     anonymousAccessEnabled: Boolean!
     supportsCustomConnections: Boolean!
-    supportsConnectionBrowser: Boolean!
-    supportsWorkspaces: Boolean!
     resourceManagerEnabled: Boolean!
 
     publicCredentialsSaveEnabled: Boolean!
@@ -145,18 +137,14 @@ type ServerConfig {
     licenseValid: Boolean!
     licenseStatus: String @since(version: "24.1.5")
 
-    sessionExpireTime: Int!
-    localHostAddress: String
-
     configurationMode: Boolean!
     #    initializationMode: Boolean! @since(version: "24.1.5")
     developmentMode: Boolean!
-    redirectOnFederatedAuth: Boolean!
     distributed: Boolean!
 
     enabledFeatures: [ID!]!
     disabledBetaFeatures: [ID!] @since(version: "24.0.5")
-    enabledAuthProviders: [ID!]!
+    serverFeatures: [ID!] @since(version: "24.3.0")
     supportedLanguages: [ ServerLanguage! ]!
     services: [ WebServiceConfig ]
     productConfiguration: Object!
@@ -164,7 +152,6 @@ type ServerConfig {
     defaultNavigatorSettings: NavigatorSettings!
     disabledDrivers: [ID!]!
     resourceQuotas: Object!
-    passwordPolicyConfiguration: PasswordPolicyConfig! @since(version: "23.3.3")
 }
 
 type ProductSettingsGroup @since(version: "24.0.1") {
@@ -209,14 +196,18 @@ type DatabaseAuthModel {
 }
 
 type DriverInfo {
+    # Driver unique full ID. It is `providerId + "." + driverId`.
+    # It is recommended to use providerId and driverId separately.
     id: ID!
     name: String
     description: String
     icon: String
     iconBig: String
 
-    # Driver provider ID
-    providerId: ID
+    # Driver ID. It is unique within provider
+    driverId: ID!
+    # Driver provider ID. It is globally unique
+    providerId: ID!
     # Driver Java class name
     driverClassName: String
     defaultHost: String
@@ -270,6 +261,7 @@ type DriverInfo {
 
     configurationTypes: [DriverConfigurationType]!
 
+    driverInstalled: Boolean!
     driverLibraries: [DriverLibraryInfo!]!
 }
 
