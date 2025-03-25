@@ -25,12 +25,21 @@ jobs:
 
       - uses: dbeaver/github-actions/install-maven@devel
 
-      - name: Set up NodeJs 20
-        uses: actions/setup-node@v4
+#      - name: Set up NodeJs 20
+#        uses: actions/setup-node@v4
+#        with:
+#          node-version: "20"
+#          cache: yarn
+#          cache-dependency-path: webapp/yarn.lock
+
+      - run: corepack enable
+      - uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: yarn
-          cache-dependency-path: webapp/yarn.lock
+          node-version: "lts/*"
+          cache: "yarn"
+          cache-dependency-path: |
+            cloudbeaver/common-*/yarn.lock
+            cloudbeaver/webapp/yarn.lock
 
       - name: Run build script
         run: ./build.sh
