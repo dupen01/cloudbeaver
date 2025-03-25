@@ -38,8 +38,8 @@ jobs:
           node-version: "lts/*"
           cache: "yarn"
           cache-dependency-path: |
-            cloudbeaver/common-*/yarn.lock
-            cloudbeaver/webapp/yarn.lock
+            ./common-*/yarn.lock
+            ./webapp/yarn.lock
 
       - name: Run build script
         run: ./build.sh
