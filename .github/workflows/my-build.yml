@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build and Push Job
+    name: My Main Build Job
     runs-on: ubuntu-latest
     env:
       REGISTRY: registry.cn-chengdu.aliyuncs.com
@@ -24,11 +24,6 @@ jobs:
           cache: maven
 
       - uses: dbeaver/github-actions/install-maven@devel
-
-      - name: Run build script
-        run: ./build-backend.sh
-        shell: bash
-        working-directory: ./cloudbeaver/deploy
 
       - name: Set up NodeJs 20
         uses: actions/setup-node@v4
