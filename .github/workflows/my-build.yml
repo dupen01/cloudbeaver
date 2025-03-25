@@ -39,23 +39,19 @@ jobs:
         shell: bash
         working-directory: ./deploy
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Log in to Aliyun Container Registry
+        run: echo "${{ secrets.ALIYUN_PASSWORD }}" | docker login $REGISTRY -u ${{ secrets.ALIYUN_USERNAME }} --password-stdin
 
-      - name: Build Docker Image
+      - name: Build and Push Docker Image
         run: |
           REPO_NAME=$(basename ${{ github.repository }})
           IMAGE_NAME=$REGISTRY/duperl/$REPO_NAME
           BRANCH_NAME=${{ github.head_ref || github.ref_name }}
           TAG_NAME=$(echo $BRANCH_NAME | sed 's/[^a-zA-Z0-9._-]/-/g')
+          docker buildx create --name=container --driver=docker-container --use --bootstrap
           docker build -t $IMAGE_NAME:$TAG_NAME \
+          --builder=container \
           --platform=linux/amd64,linux/arm64 \
-          --file ./docker/cloudbeaver-ce/Dockerfile .
+          --file ./docker/cloudbeaver-ce/Dockerfile --push .
           echo "image=$IMAGE_NAME:$TAG_NAME" >> $GITHUB_ENV
         working-directory: ./deploy
-
-      - name: Log in to Aliyun Container Registry
-        run: echo "${{ secrets.ALIYUN_PASSWORD }}" | docker login $REGISTRY -u ${{ secrets.ALIYUN_USERNAME }} --password-stdin
-
-      - name: Push Docker Image
-        run: docker push ${{ env.image }}
