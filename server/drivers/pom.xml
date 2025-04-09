@@ -32,6 +32,7 @@
         <module>sqlserver</module>
         <module>trino</module>
         <module>hana</module>
+        <module>dameng</module>
     </modules>
 
     <build>
