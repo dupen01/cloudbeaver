@@ -3,7 +3,7 @@ name: My Build and Push
 on:
   push:
     branches:
-      - 25.0.2
+      - 25.0.3
 
 jobs:
   build:
